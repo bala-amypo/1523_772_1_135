@@ -1,9 +1,7 @@
 package com.example.demo.entity;
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import java.sql.Timestamp;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import java.security.Timestamp;
+import jakarta.persistence.Id;
 @Entity
-public class User{
-    @Id
-    
-}
