@@ -19,7 +19,7 @@ public class EventServiceImpl implements EventService {
     
     @Override
     public Event createEvent(Event event) {        
-        event.setIsActive(true);
+        event.setIsActive(true); 
         return eventRepository.save(event);
     }
     
