@@ -1,26 +1,43 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.entity.Event;
 import com.example.demo.service.EventService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
+@RequestMapping("/api/events")
 public class EventController {
 
-    @Autowired
-    EventService eventservice;
+    private final EventService eventService;
 
-    @PostMapping("/addevent")
-    public Event addEvent(@RequestBody Event event) {
-        return eventservice.createEvent(event);
+    public EventController(EventService eventService) {
+        this.eventService = eventService;
     }
 
-    @GetMapping("/showevents")
-    public List<Event> showEvents() {
-        return eventservice.getAllEvents();
+    @PostMapping
+    public Event create(@RequestBody Event event) {
+        return eventService.createEvent(event);
+    }
+
+    @PutMapping("/{id}")
+    public Event update(@PathVariable Long id, @RequestBody Event event) {
+        return eventService.updateEvent(id, event);
+    }
+
+    @GetMapping("/{id}")
+    public Event get(@PathVariable Long id) {
+        return eventService.getEventById(id);
+    }
+
+    @GetMapping("/active")
+    public List<Event> active() {
+        return eventService.getActiveEvents();
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public void deactivate(@PathVariable Long id) {
+        eventService.deactivateEvent(id);
     }
 }
