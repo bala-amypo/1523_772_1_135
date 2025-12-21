@@ -50,8 +50,6 @@ public class User {
     protected void onCreate() {
         createdAt = new Timestamp(System.currentTimeMillis());
     }
-    
-    // Parameterized constructor
     public User(String fullName, String email, String password, String role) {
         this.fullName = fullName;
         this.email = email;
