@@ -11,5 +11,5 @@ public interface UserService {
     User getUserByEmail(String email);
     List<User> getAllUsers();
     void deleteUser(Long id);
-    boolean emailExists(String email);
+    boolean emailExists(String email);  // This method is missing!
 }
