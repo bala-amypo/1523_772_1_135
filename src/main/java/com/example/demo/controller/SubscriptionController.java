@@ -19,9 +19,10 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
     
     @PostMapping("/{eventId}")
-    public ResponseEntity<?> subscribeToEvent(@PathVariable Long eventId, @Valid @RequestBody Map<String, Long> request) {
+    public ResponseEntity<?> subscribeToEvent(@PathVariable Long eventId, @RequestBody Map<String, Object> request) {
         try {
-            Long userId = request.get("userId");
+            Long userId = extractUserIdFromRequest(request);
+            
             if (userId == null) {
                 throw new IllegalArgumentException("User ID is required in request body");
             }
@@ -51,15 +52,16 @@ public class SubscriptionController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "success", false,
-                "message", "Error creating subscription"
+                "message", "Error creating subscription: " + e.getMessage()
             ));
         }
     }
     
     @DeleteMapping("/{eventId}")
-    public ResponseEntity<?> unsubscribeFromEvent(@PathVariable Long eventId, @Valid @RequestBody Map<String, Long> request) {
+    public ResponseEntity<?> unsubscribeFromEvent(@PathVariable Long eventId, @RequestBody Map<String, Object> request) {
         try {
-            Long userId = request.get("userId");
+            Long userId = extractUserIdFromRequest(request);
+            
             if (userId == null) {
                 throw new IllegalArgumentException("User ID is required in request body");
             }
@@ -69,16 +71,21 @@ public class SubscriptionController {
                 "success", true,
                 "message", "Unsubscribed successfully"
             ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", e.getMessage()
+            ));
         } catch (Exception e) {
-            if (e.getMessage().contains("not found")) {
+            if (e.getMessage() != null && e.getMessage().contains("not found")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
                     "success", false,
                     "message", e.getMessage()
                 ));
             }
-            return ResponseEntity.badRequest().body(Map.of(
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "success", false,
-                "message", e.getMessage()
+                "message", "Error unsubscribing: " + e.getMessage()
             ));
         }
     }
@@ -96,7 +103,7 @@ public class SubscriptionController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "success", false,
-                "message", "Error retrieving subscriptions"
+                "message", "Error retrieving subscriptions: " + e.getMessage()
             ));
         }
     }
@@ -113,8 +120,29 @@ public class SubscriptionController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "success", false,
-                "message", "Error checking subscription"
+                "message", "Error checking subscription: " + e.getMessage()
             ));
         }
+    }
+    
+    // Helper method to extract userId from request
+    private Long extractUserIdFromRequest(Map<String, Object> request) {
+        if (request == null || !request.containsKey("userId")) {
+            return null;
+        }
+        
+        Object userIdObj = request.get("userId");
+        if (userIdObj instanceof Integer) {
+            return ((Integer) userIdObj).longValue();
+        } else if (userIdObj instanceof Long) {
+            return (Long) userIdObj;
+        } else if (userIdObj instanceof String) {
+            try {
+                return Long.parseLong((String) userIdObj);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("User ID must be a number");
+            }
+        }
+        return null;
     }
 }
