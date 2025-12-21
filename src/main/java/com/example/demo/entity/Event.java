@@ -1,11 +1,13 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Event {
 
     @Id
@@ -13,47 +15,19 @@ public class Event {
     private Long id;
 
     private String title;
+    private String description;
     private String location;
     private String category;
 
-    public Event() {}
+    private Boolean isActive = true;
 
-    public Event(Long id, String title, String location, String category) {
-        this.id = id;
-        this.title = title;
-        this.location = location;
-        this.category = category;
-    }
+    @ManyToOne
+    private User publisher;
 
-    public Long getId() {
-        return id;
-    }
-  
-    public void setId(Long id) {
-        this.id = id;
-    }
-  
-    public String getTitle() {
-        return title;
-    }
-  
-    public void setTitle(String title) {
-        this.title = title;
-    }
-  
-    public String getLocation() {
-        return location;
-    }
-  
-    public void setLocation(String location) {
-        this.location = location;
-    }
-  
-    public String getCategory() {
-        return category;
-    }
-  
-    public void setCategory(String category) {
-        this.category = category;
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    void created() {
+        this.createdAt = LocalDateTime.now();
     }
 }
