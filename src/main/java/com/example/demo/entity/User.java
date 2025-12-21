@@ -1,14 +1,5 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-import java.time.LocalDateTime;
-
-package com.example.demo.entity;
-
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -20,48 +11,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-
 @Entity
-@Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String fullName;
-
     @Column(unique = true, nullable = false)
     private String email;
-
     private String password;
-
     private String role;
-
     private Timestamp createdAt;
-
-    /* ================= Relationships ================= */
-
-    // One user (publisher) can publish many events
-    @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
-    private List<Event> events;
-
-    // One user can have many subscriptions
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Subscription> subscriptions;
-
-    // One user (subscriber) can have many broadcast logs
-    @OneToMany(mappedBy = "subscriber", cascade = CascadeType.ALL)
-    private List<BroadcastLog> broadcastLogs;
-
-    /* ================= Constructors ================= */
-
-    // No-arg constructor
+    
     public User() {
-    }
-
-    // Parameterized constructor
+    }    
     public User(String fullName, String email, String password, String role) {
         this.fullName = fullName;
         this.email = email;
@@ -69,13 +32,14 @@ public class User {
         this.role = role;
     }
 
+    /* ================= Auto Timestamp ================= */
 
     @PrePersist
     public void onCreate() {
         this.createdAt = new Timestamp(System.currentTimeMillis());
     }
 
-
+    /* ================= Getters and Setters ================= */
 
     public Long getId() {
         return id;
@@ -104,6 +68,8 @@ public class User {
     public String getPassword() {
         return password;
     }
+
+    // Password should be BCrypt-hashed in SERVICE layer
     public void setPassword(String password) {
         this.password = password;
     }
@@ -111,6 +77,8 @@ public class User {
     public String getRole() {
         return role;
     }
+
+    // Role must be ADMIN, PUBLISHER, or SUBSCRIBER (validate in service)
     public void setRole(String role) {
         this.role = role;
     }
