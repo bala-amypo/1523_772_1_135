@@ -18,12 +18,8 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     
     @Override
-    public Event createEvent(Event event) {
-        // Validate publisher role (simplified - in real app, check User repository)
-        // Publisher must have PUBLISHER or ADMIN role
-        // This would require UserService dependency
-        
-        event.setIsActive(true); // Default to active
+    public Event createEvent(Event event) {        
+        event.setIsActive(true);
         return eventRepository.save(event);
     }
     
