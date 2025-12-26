@@ -1,108 +1,44 @@
 package com.example.demo.exception;
 
+import com.example.demo.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-
-@RestControllerAdvice
+/**
+ * Centralized exception handling as per Step 5.3.
+ * Returns consistent error responses using the ApiResponse DTO.
+ */
+@ControllerAdvice
 public class GlobalExceptionHandler {
-    
+
+    // Handles 404 Not Found (ResourceNotFoundException)
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
-        ErrorResponse error = new ErrorResponse(
-            LocalDateTime.now(),
-            HttpStatus.NOT_FOUND.value(),
-            "Resource Not Found",
-            ex.getMessage()
-        );
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiResponse> handleResourceNotFound(ResourceNotFoundException ex) {
+        ApiResponse response = new ApiResponse(false, ex.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
-    
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
-        ErrorResponse error = new ErrorResponse(
-            LocalDateTime.now(),
-            HttpStatus.BAD_REQUEST.value(),
-            "Bad Request",
-            ex.getMessage()
-        );
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+
+    // Handles 400 Bad Request (IllegalArgumentException and BadRequestException)
+    // Catching both ensures compatibility with standard validation and custom logic
+    @ExceptionHandler({IllegalArgumentException.class, BadRequestException.class})
+    public ResponseEntity<ApiResponse> handleBadRequest(Exception ex) {
+        ApiResponse response = new ApiResponse(false, ex.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-    
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        
-        ValidationErrorResponse error = new ValidationErrorResponse(
-            LocalDateTime.now(),
-            HttpStatus.BAD_REQUEST.value(),
-            "Validation Failed",
-            errors
-        );
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+
+    // Handles 401 Unauthorized
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse> handleUnauthorized(UnauthorizedException ex) {
+        ApiResponse response = new ApiResponse(false, ex.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
-    
+
+    // Fallback for other runtime exceptions (500 Internal Server Error)
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
-        ErrorResponse error = new ErrorResponse(
-            LocalDateTime.now(),
-            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            "Internal Server Error",
-            "An unexpected error occurred"
-        );
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    
-    // Helper classes for error responses
-    public static class ErrorResponse {
-        private LocalDateTime timestamp;
-        private int status;
-        private String error;
-        private String message;
-        
-        public ErrorResponse(LocalDateTime timestamp, int status, String error, String message) {
-            this.timestamp = timestamp;
-            this.status = status;
-            this.error = error;
-            this.message = message;
-        }
-        
-        // Getters
-        public LocalDateTime getTimestamp() { return timestamp; }
-        public int getStatus() { return status; }
-        public String getError() { return error; }
-        public String getMessage() { return message; }
-    }
-    
-    public static class ValidationErrorResponse {
-        private LocalDateTime timestamp;
-        private int status;
-        private String error;
-        private Map<String, String> validationErrors;
-        
-        public ValidationErrorResponse(LocalDateTime timestamp, int status, String error, Map<String, String> validationErrors) {
-            this.timestamp = timestamp;
-            this.status = status;
-            this.error = error;
-            this.validationErrors = validationErrors;
-        }
-        
-        // Getters
-        public LocalDateTime getTimestamp() { return timestamp; }
-        public int getStatus() { return status; }
-        public String getError() { return error; }
-        public Map<String, String> getValidationErrors() { return validationErrors; }
+    public ResponseEntity<ApiResponse> handleGeneralException(Exception ex) {
+        ApiResponse response = new ApiResponse(false, "An error occurred: " + ex.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
