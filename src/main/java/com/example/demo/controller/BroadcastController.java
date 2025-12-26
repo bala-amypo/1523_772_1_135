@@ -30,4 +30,4 @@ public class BroadcastController {
     public List<BroadcastLog> getLogs(@PathVariable Long updateId) {
         return broadcastService.getLogsForUpdate(updateId);
     }
-}
+} 
