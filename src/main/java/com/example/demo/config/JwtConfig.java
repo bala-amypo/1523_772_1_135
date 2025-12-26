@@ -4,6 +4,8 @@ import com.example.demo.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class JwtConfig {
@@ -16,7 +18,12 @@ public class JwtConfig {
 
     @Bean
     public JwtUtil jwtUtil() {
-        // This satisfies Step 0, Rule 7's constructor requirement
         return new JwtUtil(jwtSecret, jwtValidity);
+    }
+
+    // Move this here from SecurityConfig to break circular dependencies
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
