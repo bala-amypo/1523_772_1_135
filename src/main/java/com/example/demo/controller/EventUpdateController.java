@@ -2,87 +2,39 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.EventUpdate;
 import com.example.demo.service.EventUpdateService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/updates")
-@RequiredArgsConstructor
+@Tag(name = "Updates", description = "Event Update Endpoints")
 public class EventUpdateController {
-    
+
     private final EventUpdateService eventUpdateService;
-    
+
+    public EventUpdateController(EventUpdateService eventUpdateService) {
+        this.eventUpdateService = eventUpdateService;
+    }
+
     @PostMapping
-    public ResponseEntity<?> publishUpdate(@Valid @RequestBody EventUpdate update) {
-        try {
-            // Validate update type
-            if (!update.getUpdateType().matches("INFO|WARNING|CRITICAL")) {
-                throw new IllegalArgumentException("Update type must be INFO, WARNING, or CRITICAL");
-            }
-            
-            EventUpdate publishedUpdate = eventUpdateService.createEventUpdate(update);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                "success", true,
-                "message", "Update published successfully",
-                "data", publishedUpdate
-            ));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                "success", false,
-                "message", e.getMessage()
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                "success", false,
-                "message", "Error publishing update"
-            ));
-        }
+    @Operation(summary = "Publish an update for an event")
+    public ResponseEntity<EventUpdate> publishUpdate(@RequestBody EventUpdate update) {
+        return ResponseEntity.ok(eventUpdateService.publishUpdate(update));
     }
-    
+
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<?> getUpdatesForEvent(@PathVariable Long eventId) {
-        try {
-            List<EventUpdate> updates = eventUpdateService.getEventUpdatesByEventId(eventId);
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Updates retrieved successfully",
-                "data", updates,
-                "count", updates.size()
-            ));
-        } catch (Exception e) {
-            if (e.getMessage().contains("not found")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
-                    "success", false,
-                    "message", e.getMessage()
-                ));
-            }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                "success", false,
-                "message", "Error retrieving updates"
-            ));
-        }
+    @Operation(summary = "Get all updates for a specific event")
+    public ResponseEntity<List<EventUpdate>> getUpdatesForEvent(@PathVariable Long eventId) {
+        return ResponseEntity.ok(eventUpdateService.getUpdatesForEvent(eventId));
     }
-    
+
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUpdateById(@PathVariable Long id) {
-        try {
-            EventUpdate update = eventUpdateService.getEventUpdateById(id);
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Update retrieved successfully",
-                "data", update
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
-                "success", false,
-                "message", e.getMessage()
-            ));
-        }
+    @Operation(summary = "Get update by ID")
+    public ResponseEntity<EventUpdate> getUpdateById(@PathVariable Long id) {
+        return ResponseEntity.ok(eventUpdateService.getUpdateById(id));
     }
 }
