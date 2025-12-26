@@ -7,7 +7,9 @@ import com.example.demo.repository.EventUpdateRepository;
 import com.example.demo.service.EventUpdateService;
 import com.example.demo.service.BroadcastService; // Ensure this is imported
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class EventUpdateServiceImpl implements EventUpdateService {
     private final EventUpdateRepository eventUpdateRepository;
     private final EventRepository eventRepository;

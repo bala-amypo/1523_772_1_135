@@ -4,7 +4,9 @@ import com.example.demo.entity.*;
 import com.example.demo.repository.*;
 import com.example.demo.service.BroadcastService;
 import java.util.List;
+import org.springframework.stereotype.Service; 
 
+@Service
 public class BroadcastServiceImpl implements BroadcastService {
     private final EventUpdateRepository eventUpdateRepository;
     private final SubscriptionRepository subscriptionRepository;
