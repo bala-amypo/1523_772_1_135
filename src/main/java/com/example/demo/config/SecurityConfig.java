@@ -1,8 +1,6 @@
 package com.example.demo.config;
 
 import com.example.demo.security.JwtAuthenticationFilter;
-import com.example.demo.security.JwtUtil; // Import JwtUtil
-import org.springframework.beans.factory.annotation.Value; // Import Value
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,21 +19,8 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // 1. Get values from application.properties
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-
-    @Value("${jwt.validity}")
-    private long jwtValidity;
-
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
-
-    // 2. Define the JwtUtil Bean so it can be injected into the Filter
-    @Bean
-    public JwtUtil jwtUtil() {
-        return new JwtUtil(jwtSecret, jwtValidity);
     }
 
     @Bean
