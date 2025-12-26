@@ -1,97 +1,117 @@
+// package com.example.demo.security;
+
+// import io.jsonwebtoken.Claims;
+// import io.jsonwebtoken.Jwts;
+// import io.jsonwebtoken.SignatureAlgorithm;
+
+// import java.util.Date;
+
+// public class JwtUtil {
+
+//     private final String secret;
+//     private final long validity;
+
+//     public JwtUtil(String secret, long validity) {
+//         this.secret = secret;
+//         this.validity = validity;
+//     }
+
+//     public String generateToken(Long userId, String email, String role) {
+//         return Jwts.builder()
+//                 .claim("userId", userId)
+//                 .claim("role", role)
+//                 .setSubject(email)
+//                 .setIssuedAt(new Date())
+//                 .setExpiration(new Date(System.currentTimeMillis() + validity))
+//                 .signWith(SignatureAlgorithm.HS256, secret)
+//                 .compact();
+//     }
+
+//     public boolean validateToken(String token) {
+//         try {
+//             getClaims(token);
+//             return true;
+//         } catch (Exception e) {
+//             return false;
+//         }
+//     }
+
+//     private Claims getClaims(String token) {
+//         return Jwts.parser()
+//                 .setSigningKey(secret)
+//                 .parseClaimsJws(token)
+//                 .getBody();
+//     }
+
+//     public String getUsernameFromToken(String token) {
+//         return getClaims(token).getSubject();
+//     }
+
+//     public String getRoleFromToken(String token) {
+//         return getClaims(token).get("role", String.class);
+//     }
+
+//     public Long getUserIdFromToken(String token) {
+//         return getClaims(token).get("userId", Long.class);
+//     }
+// }
+
+
 package com.example.demo.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
 import java.util.Date;
 
-/**
- * JWT Utility class for token generation and parsing.
- * Strictly follows Project Requirement Step 0, Rule 7.
- */
 public class JwtUtil {
 
     private final String secret;
-    private final long validityInMs;
+    private final long validity;
 
-    /**
-     * Required Constructor as per Step 0, Rule 7.
-     * This constructor is called by the automated test suite.
-     */
-    public JwtUtil(String secret, long validityInMs) {
+    public JwtUtil(String secret, long validity) {
         this.secret = secret;
-        this.validityInMs = validityInMs;
+        this.validity = validity;
     }
 
-    /**
-     * Generates a JWT token containing userId, email, and role.
-     * Required for Step 8.1 and Test Case #49.
-     */
     public String generateToken(Long userId, String email, String role) {
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put("userId", userId);
-        claims.put("role", role);
-
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMs);
-
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secret.getBytes())
+                .setSubject(email)
+                .claim("userId", userId)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + validity))
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
-    /**
-     * Validates if the token is properly signed and not expired.
-     * Required for Step 8.1 and Test Case #50.
-     */
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secret.getBytes()).parseClaimsJws(token);
+            getClaims(token);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    /**
-     * Extracts the Subject (email) from the token.
-     * Required for Step 8.1 and Test Case #52.
-     */
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
     public String getUsernameFromToken(String token) {
         return getClaims(token).getSubject();
     }
 
-    /**
-     * Extracts the userId claim. Handles casting from Integer to Long 
-     * which is a common parsing side-effect.
-     * Required for Step 8.1 and Test Case #49.
-     */
-    public Long getUserIdFromToken(String token) {
-        Object userId = getClaims(token).get("userId");
-        if (userId instanceof Integer) {
-            return ((Integer) userId).longValue();
-        }
-        return (Long) userId;
-    }
-
-    /**
-     * Extracts the role claim.
-     * Required for Step 8.1 and Test Case #54.
-     */
     public String getRoleFromToken(String token) {
-        return (String) getClaims(token).get("role");
+        return getClaims(token).get("role", String.class);
     }
 
-    /**
-     * Helper to parse the token claims.
-     */
-    private Claims getClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret.getBytes())
-                .parseClaimsJws(token)
-                .getBody();
+    public Long getUserIdFromToken(String token) {
+        return getClaims(token).get("userId", Long.class);
     }
 }
+
