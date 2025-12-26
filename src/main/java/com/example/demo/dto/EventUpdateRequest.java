@@ -1,17 +1,28 @@
 package com.example.demo.dto;
 
+import com.example.demo.entity.SeverityLevel;
+
 public class EventUpdateRequest {
-    private Long eventId;
-    private String updateContent;
-    private String updateType; // INFO, WARNING, CRITICAL
 
-    public EventUpdateRequest() {}
+    private String message;
+    private SeverityLevel severityLevel;
 
-    // Getters and Setters
-    public Long getEventId() { return eventId; }
-    public void setEventId(Long eventId) { this.eventId = eventId; }
-    public String getUpdateContent() { return updateContent; }
-    public void setUpdateContent(String updateContent) { this.updateContent = updateContent; }
-    public String getUpdateType() { return updateType; }
-    public void setUpdateType(String updateType) { this.updateType = updateType; }
+    public EventUpdateRequest() {
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public SeverityLevel getSeverityLevel() {
+        return severityLevel;
+    }
+
+    public void setSeverityLevel(SeverityLevel severityLevel) {
+        this.severityLevel = severityLevel;
+    }
 }
