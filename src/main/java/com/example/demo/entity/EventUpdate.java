@@ -15,7 +15,8 @@ public class EventUpdate {
     @Enumerated(EnumType.STRING)
     private SeverityLevel severityLevel;
 
-    private Instant timestamp;
+    // CHANGED: Renamed from timestamp to postedAt to match Document Step 1.3
+    private Instant postedAt;
 
     @ManyToOne
     @JoinColumn(name = "event_id")
@@ -25,7 +26,7 @@ public class EventUpdate {
 
     @PrePersist
     public void onCreate() {
-        this.timestamp = Instant.now();
+        this.postedAt = Instant.now();
         if (this.severityLevel == null) this.severityLevel = SeverityLevel.LOW;
     }
 
@@ -36,8 +37,8 @@ public class EventUpdate {
     public void setUpdateContent(String updateContent) { this.updateContent = updateContent; }
     public SeverityLevel getSeverityLevel() { return severityLevel; }
     public void setSeverityLevel(SeverityLevel severityLevel) { this.severityLevel = severityLevel; }
-    public Instant getTimestamp() { return timestamp; }
-    public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
+    public Instant getPostedAt() { return postedAt; }
+    public void setPostedAt(Instant postedAt) { this.postedAt = postedAt; }
     public Event getEvent() { return event; }
     public void setEvent(Event event) { this.event = event; }
 }
