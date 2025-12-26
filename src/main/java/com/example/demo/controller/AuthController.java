@@ -28,14 +28,22 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping("/register")
+   @PostMapping("/register")
     @Operation(summary = "Register a new user")
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
         User user = new User();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setRole(request.getRole());
+        
+        // FIX: Convert String from Request to Role Enum
+        if (request.getRole() != null) {
+            try {
+                user.setRole(com.example.demo.entity.Role.valueOf(request.getRole().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                user.setRole(com.example.demo.entity.Role.SUBSCRIBER); // Default fallback
+            }
+        }
 
         User registeredUser = userService.register(user);
         return ResponseEntity.ok(new ApiResponse(true, "User registered successfully", registeredUser));
