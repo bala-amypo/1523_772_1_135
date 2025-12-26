@@ -1,45 +1,39 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
-@Table(name = "subscriptions", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "event_id"})
-})
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "subscriptions")
 public class Subscription {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @NotNull(message = "User ID is required")
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-    
-    @NotNull(message = "Event ID is required")
-    @Column(name = "event_id", nullable = false)
-    private Long eventId;
-    
-    @Column(name = "subscribed_at", nullable = false, updatable = false)
-    private Timestamp subscribedAt;
-    
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+    private Instant subscribedAt;
+
+    public Subscription() {}
+
     @PrePersist
-    protected void onCreate() {
-        subscribedAt = new Timestamp(System.currentTimeMillis());
+    public void onCreate() {
+        this.subscribedAt = Instant.now();
     }
-    
-    // Parameterized constructor
-    public Subscription(Long userId, Long eventId) {
-        this.userId = userId;
-        this.eventId = eventId;
-    }
+
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+    public Event getEvent() { return event; }
+    public void setEvent(Event event) { this.event = event; }
+    public Instant getSubscribedAt() { return subscribedAt; }
+    public void setSubscribedAt(Instant subscribedAt) { this.subscribedAt = subscribedAt; }
 }
