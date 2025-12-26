@@ -21,7 +21,6 @@ public class JwtConfig {
         return new JwtUtil(jwtSecret, jwtValidity);
     }
 
-    // Move this here from SecurityConfig to break circular dependencies
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
