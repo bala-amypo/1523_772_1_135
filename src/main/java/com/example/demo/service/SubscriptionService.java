@@ -4,13 +4,8 @@ import com.example.demo.entity.Subscription;
 import java.util.List;
 
 public interface SubscriptionService {
-    Subscription createSubscription(Subscription subscription);
-    Subscription getSubscriptionById(Long id);
-    List<Subscription> getAllSubscriptions();
-    List<Subscription> getSubscriptionsByUserId(Long userId);
-    List<Subscription> getSubscriptionsByEventId(Long eventId);
-    boolean isUserSubscribed(Long userId, Long eventId);
-    Subscription getSubscriptionByUserAndEvent(Long userId, Long eventId);
-    void deleteSubscription(Long id);
+    Subscription subscribe(Long userId, Long eventId);
     void unsubscribe(Long userId, Long eventId);
+    boolean isSubscribed(Long userId, Long eventId);
+    List<Subscription> getUserSubscriptions(Long userId);
 }
