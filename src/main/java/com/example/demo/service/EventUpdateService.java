@@ -4,9 +4,11 @@ import com.example.demo.entity.EventUpdate;
 import java.util.List;
 
 public interface EventUpdateService {
-    // ADD THIS LINE
+
+     
     EventUpdate publishUpdate(EventUpdate update);
-    
-    List<EventUpdate> getUpdatesForEvent(Long eventId);
+
     EventUpdate getUpdateById(Long id);
+
+    List<EventUpdate> getUpdatesForEvent(Long eventId);
 }

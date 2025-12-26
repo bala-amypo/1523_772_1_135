@@ -3,42 +3,54 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.Event;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.EventRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.EventService;
+
+import org.springframework.stereotype.Service;
+
 import java.util.List;
-import org.springframework.stereotype.Service; 
 
 @Service
 public class EventServiceImpl implements EventService {
+
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-
-    public EventServiceImpl(EventRepository eventRepository, UserRepository userRepository) {
+    public EventServiceImpl(EventRepository eventRepository,
+                            UserRepository userRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
     }
 
     @Override
     public Event createEvent(Event event) {
-        User publisher = userRepository.findById(event.getPublisher().getId())
+
+        Long publisherId = event.getPublisher().getId();
+
+        User publisher = userRepository.findById(publisherId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        
-        if (publisher.getRole() == Role.SUBSCRIBER) {
-            throw new IllegalArgumentException("Only PUBLISHER or ADMIN can create events");
+
+        if (publisher.getRole() != Role.PUBLISHER && publisher.getRole() != Role.ADMIN) {
+            throw new BadRequestException("Only PUBLISHER or ADMIN can create events");
         }
+
+        event.setPublisher(publisher);
         return eventRepository.save(event);
     }
 
     @Override
-    public Event updateEvent(Long id, Event event) {
+    public Event updateEvent(Long id, Event updated) {
+
         Event existing = eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
-        existing.setTitle(event.getTitle());
-        existing.setDescription(event.getDescription());
-        existing.setLocation(event.getLocation());
-        existing.setCategory(event.getCategory());
+
+        existing.setTitle(updated.getTitle());
+        existing.setDescription(updated.getDescription());
+        existing.setLocation(updated.getLocation());
+        existing.setCategory(updated.getCategory());
+
         return eventRepository.save(existing);
     }
 
@@ -49,15 +61,28 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void deactivateEvent(Long id) {
+
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+
         event.setActive(false);
         eventRepository.save(event);
+    }
+
+    
+    @Override
+    public Event save(Event event) {
+        return eventRepository.save(event);
     }
 
     @Override
     public Event getById(Long id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+    }
+
+    @Override
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
     }
 }
