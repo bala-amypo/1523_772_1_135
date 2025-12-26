@@ -1,17 +1,20 @@
+
 package com.example.demo.controller;
 
 import com.example.demo.entity.EventUpdate;
 import com.example.demo.service.EventUpdateService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/updates")
-@Tag(name = "Updates", description = "Event Update Endpoints")
 public class EventUpdateController {
 
     private final EventUpdateService eventUpdateService;
@@ -21,20 +24,17 @@ public class EventUpdateController {
     }
 
     @PostMapping
-    @Operation(summary = "Publish an update for an event")
-    public ResponseEntity<EventUpdate> publishUpdate(@RequestBody EventUpdate update) {
-        return ResponseEntity.ok(eventUpdateService.publishUpdate(update));
+    public EventUpdate publish(@RequestBody EventUpdate update) {
+        return eventUpdateService.publishUpdate(update);
     }
 
     @GetMapping("/event/{eventId}")
-    @Operation(summary = "Get all updates for a specific event")
-    public ResponseEntity<List<EventUpdate>> getUpdatesForEvent(@PathVariable Long eventId) {
-        return ResponseEntity.ok(eventUpdateService.getUpdatesForEvent(eventId));
+    public List<EventUpdate> getForEvent(@PathVariable Long eventId) {
+        return eventUpdateService.getUpdatesForEvent(eventId);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get update by ID")
-    public ResponseEntity<EventUpdate> getUpdateById(@PathVariable Long id) {
-        return ResponseEntity.ok(eventUpdateService.getUpdateById(id));
+    public EventUpdate getById(@PathVariable Long id) {
+        return eventUpdateService.getUpdateById(id);
     }
 }
