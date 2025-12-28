@@ -110,7 +110,7 @@ public class SwaggerConfig {
 
                 // ✅ SERVER (DEPLOYED URL)
                 .servers(List.of(
-                        new Server().url("https://9003.32procr.amypo.ai")
+                        new Server().url("https://9462.pro604cr.amypo.ai/")
                 ))
 
                 // ✅ SECURITY REQUIREMENT (IMPORTANT)
