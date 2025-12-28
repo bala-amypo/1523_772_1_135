@@ -12,6 +12,6 @@ public interface BroadcastService {
 
     void triggerBroadcast(Long eventUpdateId);
 
-    // 🔴 MUST be BroadcastLog, NOT String
+
     List<BroadcastLog> getLogsForUpdate(Long eventUpdateId);
 }
