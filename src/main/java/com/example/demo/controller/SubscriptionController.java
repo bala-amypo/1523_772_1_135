@@ -5,11 +5,12 @@ import com.example.demo.entity.Subscription;
 import com.example.demo.service.SubscriptionService;
 
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/subscriptions")
+@SecurityRequirement(name="bearerAuth")
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;

@@ -6,11 +6,12 @@ import com.example.demo.entity.Event;
 import com.example.demo.service.EventService;
 
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 
 @RestController
 @RequestMapping("/events")
+@SecurityRequirement(name="bearerAuth")
 public class EventController {
 
     private final EventService eventService;
